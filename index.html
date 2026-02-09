@@ -1,10 +1,183 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Website</title>
-  </head>
-  <body>
-    <h1>Hello, world 👋</h1>
-    <p>This site is hosted on GitHub Pages.</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>💖 Valentine Wordle 💖</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #ffe4e1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .game {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 95%;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(22, 1fr);
+      gap: 4px;
+    }
+
+    .tile {
+      width: 30px;
+      height: 40px;
+      border: 2px solid #ffc0cb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 6px;
+      background: #fff0f5;
+    }
+
+    .correct {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    .present {
+      background: #ffb703;
+      color: white;
+    }
+
+    .absent {
+      background: #d3d3d3;
+      color: white;
+    }
+
+    input {
+      padding: 10px;
+      width: 90%;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid #ff4d6d;
+      outline: none;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #ff4d6d;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e63950;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #ff4d6d;
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h1>💖 Valentine Wordle 💖</h1>
+    <p>Guess the secret phrase 💌</p>
+
+    <div class="grid" id="grid"></div>
+
+    <input id="guessInput" maxlength="22" placeholder="Type your guess..." />
+    <br />
+    <button onclick="submitGuess()">Guess 💕</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const ANSWER = "willyoubemykategitine";
+    const MAX_GUESSES = 6;
+    let currentRow = 0;
+
+    const grid = document.getElementById("grid");
+    const message = document.getElementById("message");
+
+    // Create grid
+    for (let i = 0; i < MAX_GUESSES; i++) {
+      const row = document.createElement("div");
+      row.className = "row";
+
+      for (let j = 0; j < ANSWER.length; j++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        row.appendChild(tile);
+      }
+
+      grid.appendChild(row);
+    }
+
+    function submitGuess() {
+      if (currentRow >= MAX_GUESSES) return;
+
+      const input = document.getElementById("guessInput");
+      const guess = input.value.toLowerCase();
+
+      if (guess.length !== ANSWER.length) {
+        alert(`Your guess must be ${ANSWER.length} characters long 💕`);
+        return;
+      }
+
+      const row = grid.children[currentRow];
+      const answerArray = ANSWER.split("");
+
+      for (let i = 0; i < ANSWER.length; i++) {
+        const tile = row.children[i];
+        tile.textContent = guess[i];
+
+        if (guess[i] === ANSWER[i]) {
+          tile.classList.add("correct");
+        } else if (answerArray.includes(guess[i])) {
+          tile.classList.add("present");
+        } else {
+          tile.classList.add("absent");
+        }
+      }
+
+      if (guess === ANSWER) {
+        message.innerHTML = "💖 YES!!! Will you be my Kategitine? 💖<br>Happy Valentine’s Day 💘";
+        input.disabled = true;
+        return;
+      }
+
+      currentRow++;
+      input.value = "";
+
+      if (currentRow === MAX_GUESSES) {
+        message.textContent = "💔 Out of guesses… but my heart is yours anyway 💕";
+      }
+    }
+  </script>
+</body>
 </html>
