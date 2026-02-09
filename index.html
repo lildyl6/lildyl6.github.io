@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>💖 Valentine Wordle 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     body {
       font-family: "Comic Sans MS", cursive, sans-serif;
@@ -20,37 +22,44 @@
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
+      width: 95%;
+      max-width: 420px;
     }
 
     h1 {
       color: #ff4d6d;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 15px;
     }
 
     .grid {
       display: grid;
       grid-template-rows: repeat(6, 1fr);
       gap: 8px;
-      margin: 20px 0;
+      margin: 15px 0;
     }
 
     .row {
       display: grid;
-      grid-template-columns: repeat(22, 1fr);
-      gap: 4px;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
     }
 
     .tile {
-      width: 30px;
-      height: 40px;
+      aspect-ratio: 1 / 1.2;
       border: 2px solid #ffc0cb;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       text-transform: uppercase;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #fff0f5;
     }
 
@@ -74,20 +83,30 @@
       font-size: 18px;
       color: #ff4d6d;
     }
+
+    /* Hidden input to trigger mobile keyboard */
+    #hiddenInput {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <div class="game">
+  <div class="game" onclick="focusInput()">
     <h1>💖 Valentine Wordle 💖</h1>
-    <p>Type your guess & press Enter 💌</p>
+    <div class="subtitle">Will you be my</div>
 
     <div class="grid" id="grid"></div>
 
     <div class="message" id="message"></div>
   </div>
 
+  <!-- Hidden input for mobile keyboard -->
+  <input id="hiddenInput" autocomplete="off" />
+
   <script>
-    const ANSWER = "willyoubemykategitine";
+    const ANSWER = "kategitine";
     const MAX_GUESSES = 6;
 
     let currentRow = 0;
@@ -96,6 +115,7 @@
 
     const grid = document.getElementById("grid");
     const message = document.getElementById("message");
+    const hiddenInput = document.getElementById("hiddenInput");
 
     // Build grid
     for (let i = 0; i < MAX_GUESSES; i++) {
@@ -109,6 +129,10 @@
       }
 
       grid.appendChild(row);
+    }
+
+    function focusInput() {
+      hiddenInput.focus();
     }
 
     document.addEventListener("keydown", handleKey);
@@ -143,8 +167,7 @@
     }
 
     function updateTile(letter, row, col) {
-      const tile = grid.children[row].children[col];
-      tile.textContent = letter;
+      grid.children[row].children[col].textContent = letter;
     }
 
     function submitGuess() {
@@ -166,7 +189,7 @@
 
       if (guess === ANSWER) {
         message.innerHTML =
-          "💖 YES!!! Will you be my Kategitine? 💖<br>Happy Valentine’s Day 💘";
+          "💖 YES!!! 💖<br>Happy Valentine’s Day 💘";
         currentRow = MAX_GUESSES;
         return;
       }
@@ -176,9 +199,12 @@
 
       if (currentRow === MAX_GUESSES) {
         message.textContent =
-          "💔 Out of guesses… but my heart is still yours 💕";
+          "💔 Out of guesses… but the answer is still KATEGITINE 💕";
       }
     }
+
+    // Auto-focus on load (helps mobile)
+    focusInput();
   </script>
 </body>
 </html>
