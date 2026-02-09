@@ -20,7 +20,6 @@
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       text-align: center;
-      max-width: 95%;
     }
 
     h1 {
@@ -70,31 +69,6 @@
       color: white;
     }
 
-    input {
-      padding: 10px;
-      width: 90%;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 2px solid #ff4d6d;
-      outline: none;
-      text-align: center;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #ff4d6d;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #e63950;
-    }
-
     .message {
       margin-top: 15px;
       font-size: 18px;
@@ -105,13 +79,9 @@
 <body>
   <div class="game">
     <h1>💖 Valentine Wordle 💖</h1>
-    <p>Guess the secret phrase 💌</p>
+    <p>Type your guess & press Enter 💌</p>
 
     <div class="grid" id="grid"></div>
-
-    <input id="guessInput" maxlength="22" placeholder="Type your guess..." />
-    <br />
-    <button onclick="submitGuess()">Guess 💕</button>
 
     <div class="message" id="message"></div>
   </div>
@@ -119,12 +89,15 @@
   <script>
     const ANSWER = "willyoubemykategitine";
     const MAX_GUESSES = 6;
+
     let currentRow = 0;
+    let currentCol = 0;
+    let guesses = Array(MAX_GUESSES).fill("");
 
     const grid = document.getElementById("grid");
     const message = document.getElementById("message");
 
-    // Create grid
+    // Build grid
     for (let i = 0; i < MAX_GUESSES; i++) {
       const row = document.createElement("div");
       row.className = "row";
@@ -138,23 +111,49 @@
       grid.appendChild(row);
     }
 
-    function submitGuess() {
+    document.addEventListener("keydown", handleKey);
+
+    function handleKey(e) {
       if (currentRow >= MAX_GUESSES) return;
 
-      const input = document.getElementById("guessInput");
-      const guess = input.value.toLowerCase();
-
-      if (guess.length !== ANSWER.length) {
-        alert(`Your guess must be ${ANSWER.length} characters long 💕`);
+      if (e.key === "Backspace") {
+        if (currentCol > 0) {
+          currentCol--;
+          guesses[currentRow] =
+            guesses[currentRow].slice(0, -1);
+          updateTile("", currentRow, currentCol);
+        }
         return;
       }
 
+      if (e.key === "Enter") {
+        if (currentCol === ANSWER.length) {
+          submitGuess();
+        }
+        return;
+      }
+
+      if (/^[a-zA-Z]$/.test(e.key)) {
+        if (currentCol < ANSWER.length) {
+          guesses[currentRow] += e.key.toLowerCase();
+          updateTile(e.key, currentRow, currentCol);
+          currentCol++;
+        }
+      }
+    }
+
+    function updateTile(letter, row, col) {
+      const tile = grid.children[row].children[col];
+      tile.textContent = letter;
+    }
+
+    function submitGuess() {
+      const guess = guesses[currentRow];
       const row = grid.children[currentRow];
       const answerArray = ANSWER.split("");
 
       for (let i = 0; i < ANSWER.length; i++) {
         const tile = row.children[i];
-        tile.textContent = guess[i];
 
         if (guess[i] === ANSWER[i]) {
           tile.classList.add("correct");
@@ -166,16 +165,18 @@
       }
 
       if (guess === ANSWER) {
-        message.innerHTML = "💖 YES!!! Will you be my Kategitine? 💖<br>Happy Valentine’s Day 💘";
-        input.disabled = true;
+        message.innerHTML =
+          "💖 YES!!! Will you be my Kategitine? 💖<br>Happy Valentine’s Day 💘";
+        currentRow = MAX_GUESSES;
         return;
       }
 
       currentRow++;
-      input.value = "";
+      currentCol = 0;
 
       if (currentRow === MAX_GUESSES) {
-        message.textContent = "💔 Out of guesses… but my heart is yours anyway 💕";
+        message.textContent =
+          "💔 Out of guesses… but my heart is still yours 💕";
       }
     }
   </script>
